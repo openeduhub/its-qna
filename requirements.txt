@@ -1,0 +1,9 @@
+pandas
+transformers
+bitsandbytes
+accelerate
+llama-index-core
+llama-index-llms-huggingface
+fastapi
+pydantic
+uvicorn
