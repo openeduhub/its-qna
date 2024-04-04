@@ -1,0 +1,50 @@
+#+title:LLM-generated question-answer pairs
+
+* Building OCI Images (optionally with CUDA support)
+
+To build ~OCI~ images, we use the [[https://github.com/nlewo/nix2container][nix2container]] library, which efficiently generates minimal, layered images. Thus, an installation of [[https://nixos.org/download][Nix]] is required.
+
+These images can be directly copied to ~Podman~, ~Docker~, or a registry, using
+#+begin_src sh
+nix run "github:openeduhub/its-qna#docker.copyToPodman"
+nix run "github:openeduhub/its-qna#docker.copyToDockerRegistry"
+nix run "github:openeduhub/its-qna#docker.copyTo" -- <destination-information>
+#+end_src
+
+If any of the above command return an error regarding experimental features, add =--extra-experimental-features "nix-command flakes"= to the command, e.g.
+#+begin_src sh
+nix --extra-experimental-features "nix-command flakes" run "github:openeduhub/its-qna#docker.copyToPodman"
+#+end_src
+
+In order to generate images with CUDA support, simply replace =docker= with =docker-with-cuda=, e.g.
+#+begin_src sh
+nix run "github:openeduhub/its-qna#docker-with-cuda.copyToPodman"
+#+end_src
+
+*Important*: The image built with CUDA support is actually broken right now, see [[Limitations & Notes]].
+
+* Running natively
+
+Alternatively, this application may also be run natively, by running
+
+#+begin_src sh
+nix run github:openeduhub/its-qna
+#+end_src
+
+To see the various command-line options, use
+
+#+begin_src sh
+nix run github:openeduhub/its-qna -- --help
+#+end_src
+
+* Limitations & Notes
+
+** CUDA support is broken
+
+Due to [[https://github.com/NixOS/nixpkgs/issues/296179][an issue in nixpkgs]], the CUDA support is currently broken. The underlying issue is currently being worked on.
+
+** Building with CUDA support requires (some) compilation from source
+
+Because CUDA is distributed under a non-free license, it and its related packages are not available in the official NixOS cache. As such, these packages may need to be compiled from source.
+
+However, the community-run [[https://app.cachix.org/cache/cuda-maintainers][cuda-maintainers cache]] contains most of these packages.
